@@ -1,0 +1,10 @@
+button {
+	font-size: 16pt;
+	background: red;
+	color: red;
+
+}
+*{
+	margin:0;
+	padding:0;
+}

@@ -1,0 +1,100 @@
+<html>
+<head>
+	<!-- 		configure snmp sysName \"X\"
+				configure snmp sysContact \"X\"
+
+				configure vlan default delete ports X 
+				create vlan \"X\"
+				configure vlan X tag X
+
+				configure ports X display-string \"X\"
+				configure ports X description-string \"X\"
+
+				enable sharing X grouping X algorithm address-based L2 lacp
+
+				configure vlan X add ports X X  
+				configure vlan Default ipaddress X X
+
+				configure iproute add default X -->
+
+
+	<title>TDec Extreme Script</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<script src="js/jquery-1.11.3.js"></script>	
+	<script>		
+		var count = 0;
+	    var vlans = document.getElementById("count");
+
+	    function plus(){
+	        count++;
+	        vlans.value = count;
+	    }
+
+	    function minus(){
+	        count--;
+	        vlans.value = count;
+	    }
+
+		function generateScript(){		
+			var extreme = "";
+			var sysName = document.getElementById("sysName").value;
+			extreme += "configure snmp sysName \""+sysName+"\"\n";
+
+			var sysContact = document.getElementById("sysContact").value;
+			extreme += "configure snmp sysName \""+sysContact+"\"\n";
+	
+			document.getElementById("output").value = extreme;
+		}
+	
+	</script>
+</head>
+<body>
+	<div class="container">			
+		<center>
+		<p><h4>TDec Network Group - Extreme Script</h4></p>
+	</div>
+
+	<div class="container-fluid">	
+
+			<div class="col-xs-12 col-sm-6 col-md-6">	
+
+				<form class="form-horizontal" role="form">
+				    <div class="form-group">
+					    <label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
+					    <div class="col-sm-8 col-md-10">
+					    	<input class="form-control" id="sysName" placeholder="SysName">
+					    </div>
+				    </div>
+
+				    <div class="form-group">
+					    <label class="control-label col-sm-4 col-md-2" for="sysContact">SysContact:</label>
+					    <div class="col-sm-8 col-md-10">
+					    	<input class="form-control" id="sysContact" placeholder="sysContact">
+					    </div>
+				    </div>
+
+				    <div class="form-group">				    	
+					    <label class="control-label col-sm-4 col-md-2" for="sysContact">VLANS:</label>
+					    <div class="col-sm-8 col-md-10">
+							<input type="text" value="0" id="count" class="form-control">						
+							<input type="button" value="-" id="minus" onclick="minus()" class="btn btn-default">
+							<input type="button" value="+" id="plus" onclick="plus()" class="btn btn-default">								
+						</div>
+				    </div>
+
+				    <div class="form-group">        
+				     	<div class="col-sm-offset-2 col-sm-10">
+							<input type="button" value="Criar Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block"><p>
+						</div>
+					</div>
+
+				</form>
+
+			</div>
+
+			<div class="col-xs-12 col-sm-6 col-md-6">
+				<textarea id='output' class="field span12" style="width:100% ; height:80%" placeholder="Script sera gerado aqui"></textarea>
+			</div>			
+	</div>				
+</body>
+</html>
