@@ -41,7 +41,13 @@
 			extreme += "configure snmp sysName \""+sysName+"\"\n";
 
 			var sysContact = document.getElementById("sysContact").value;
-			extreme += "configure snmp sysName \""+sysContact+"\"\n";
+			extreme += "configure snmp sysContact \""+sysContact+"\"\n";
+
+			var vlan = document.getElementById("vlan").value;
+			extreme += "create vlan \""+vlan+"\"\n";
+
+			var tag = document.getElementById("tag").value;
+			extreme += "configure vlan "+vlan+" tag "+tag;
 	
 			document.getElementById("output").value = extreme;
 		}
@@ -59,31 +65,55 @@
 			<div class="col-xs-12 col-sm-6 col-md-6">	
 
 				<form class="form-horizontal" role="form">
-				    <div class="form-group">
-					    <label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
-					    <div class="col-sm-8 col-md-10">
-					    	<input class="form-control" id="sysName" placeholder="SysName">
-					    </div>
-				    </div>
 
-				    <div class="form-group">
-					    <label class="control-label col-sm-4 col-md-2" for="sysContact">SysContact:</label>
-					    <div class="col-sm-8 col-md-10">
-					    	<input class="form-control" id="sysContact" placeholder="sysContact">
-					    </div>
-				    </div>
+					<div class="panel panel-default">
+	  					<div class="panel-heading">Informacoes Basicas</div>					
+					    <div class="panel-body">
+						    <div class="form-group">
+							    <label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="sysName" placeholder="SysName">
+							    </div>
+						    </div>
 
-				    <div class="form-group">				    	
-					    <label class="control-label col-sm-4 col-md-2" for="sysContact">VLANS:</label>
-					    <div class="col-sm-8 col-md-10">
-							<input type="text" value="0" id="count" class="form-control">						
-							<input type="button" value="-" id="minus" onclick="minus()" class="btn btn-default">
-							<input type="button" value="+" id="plus" onclick="plus()" class="btn btn-default">								
+						    <div class="form-group">
+							    <label class="control-label col-sm-4 col-md-2" for="sysContact">SysContact:</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="sysContact" placeholder="sysContact">
+							    </div>
+						    </div>
 						</div>
-				    </div>
+					</div>
+					
 
-				    <div class="form-group">        
-				     	<div class="col-sm-offset-2 col-sm-10">
+					<div class="panel panel-default">
+					
+
+	  					<div class="panel-heading">VLANS</div>					
+					    <div class="panel-body">
+
+							<button type="button" class="btn btn-link btn-block">
+								<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>  Adiciona nova VLAN</button><br>
+
+					    	<div class="form-group">
+							    <label class="control-label col-sm-4 col-md-2" for="sysName">VLAN:</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="vlan" placeholder="VLAN">
+							    </div>
+						    </div>
+
+						    <div class="form-group">
+							    <label class="control-label col-sm-4 col-md-2" for="sysName">Tag:</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="tag" placeholder="Tags">
+							    </div>
+						    </div>
+
+					    </div>
+					</div>
+
+					<div class="form-group">        
+				     	<div class="col-sm-12">
 							<input type="button" value="Criar Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block"><p>
 						</div>
 					</div>
@@ -93,7 +123,7 @@
 			</div>
 
 			<div class="col-xs-12 col-sm-6 col-md-6">
-				<textarea id='output' class="field span12" style="width:100% ; height:80%" placeholder="Script sera gerado aqui"></textarea>
+				<textarea id='output' class="form-control" style="width:100% ; height:80%" placeholder="Seu script sera gerado aqui"></textarea>
 			</div>			
 	</div>				
 </body>
