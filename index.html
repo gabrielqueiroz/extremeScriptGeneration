@@ -1,130 +1,348 @@
-<html>
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
 	<!-- 		configure snmp sysName \"X\"
 				configure snmp sysContact \"X\"
-
-				configure vlan default delete ports X 
-				create vlan \"X\"
-				configure vlan X tag X
-
+				
 				configure ports X display-string \"X\"
 				configure ports X description-string \"X\"
 
 				enable sharing X grouping X algorithm address-based L2 lacp
+
+				configure vlan default delete ports X 
+				create vlan \"X\"
+				configure vlan X tag X
 
 				configure vlan X add ports X X  
 				configure vlan Default ipaddress X X
 
 				configure iproute add default X -->
 
-
 	<title>TDec Extreme Script</title>
 	<link rel="stylesheet" href="css/bootstrap.min.css"/>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script src="js/jquery-1.11.3.js"></script>	
-	<script>		
-		var count = 0;
-	    var vlans = document.getElementById("count");
+	<script>
+		var vlanCount = 0;
+		var portCount = 0;
+		var output = "";
 
-	    function plus(){
-	        count++;
-	        vlans.value = count;
-	    }
+		function addPort(){
+			var div = document.createElement('div');
 
-	    function minus(){
-	        count--;
-	        vlans.value = count;
-	    }
+		    div.innerHTML = '<div class="form-group">\
+							    <label class="control-label col-sm-4 col-md-2">Port(s):</label>\
+							    <div class="col-sm-8 col-md-10">\
+							    	<input class="form-control" id="port'+portCount+'" placeholder="Port">\
+							    </div>\
+						    </div>\
+						    <div class="form-group">\
+							    <label class="control-label col-sm-4 col-md-2">Display String:</label>\
+							    <div class="col-sm-8 col-md-10">\
+							    	<input class="form-control" id="dispstring'+portCount+'" placeholder="Display String">\
+							    </div>\
+						    </div>\
+						    <div class="form-group">\
+							    <label class="control-label col-sm-4 col-md-2">Description String:</label>\
+							    <div class="col-sm-8 col-md-10">\
+							    	<input class="form-control" id="descstring'+portCount+'" placeholder="Description String">\
+							    </div>\
+						    </div>';
+
+			portCount++;
+
+			document.getElementById('divPort').appendChild(div);
+		}
+
+		function addVLAN(){			
+			var div = document.createElement('div');
+
+		    div.innerHTML = '<li class="divider"></li>\
+		    						<div class="form-group">\
+										<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">\
+										</div>\
+										<label class="control-label col-sm-1 col-md-1">Tag:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">\
+										</div>\
+									</div>\
+									<div class="form-group">\
+										<label class="control-label col-sm-1 col-md-1">Tag:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">\
+										</div>\
+										<label class="control-label col-sm-1 col-md-1">Untag:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">\
+										</div>\
+									</div>\
+									<div class="form-group">\
+										<label class="control-label col-sm-1 col-md-1">IP:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">\
+										</div>\
+										<label class="control-label col-sm-1 col-md-1">Mask:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">\
+										</div>\
+									</div>';
+
+			document.getElementById('divVLAN').appendChild(div);
+
+			vlanCount++;
+		}
+
 
 		function generateScript(){		
-			var extreme = "";
-			var sysName = document.getElementById("sysName").value;
-			extreme += "configure snmp sysName \""+sysName+"\"\n";
+			output = "";
 
-			var sysContact = document.getElementById("sysContact").value;
-			extreme += "configure snmp sysContact \""+sysContact+"\"\n";
+			if (document.getElementById("sysName").value.length>1){
+				var sysName = document.getElementById("sysName").value;
+				output += "configure snmp sysName \""+sysName+"\"\n";
 
-			var vlan = document.getElementById("vlan").value;
-			extreme += "create vlan \""+vlan+"\"\n";
+				var sysContact = document.getElementById("sysContact").value;
+				output += "configure snmp sysContact \""+sysContact+"\"\n";
 
-			var tag = document.getElementById("tag").value;
-			extreme += "configure vlan "+vlan+" tag "+tag;
+				var sysLocation = document.getElementById("sysLocation").value;
+				output += "configure snmp sysLocation \""+sysLocation+"\"\n";
+			}
+
+			for (var i=0;i<=portCount;i++){
+				if (document.getElementById("port"+i) !== null){
+					if (document.getElementById("port"+i).length>1){
+						var port = document.getElementById("port"+i).value;		
+						var dispstring = document.getElementById("dispstring"+i).value;
+						output += "configure ports "+port+" display-string "+dispstring+"\n";
+
+						var descstring = document.getElementById("descstring"+i).value;
+						output += "configure ports "+port+" description-string "+descstring+"\n";	
+					}
+				}
+			}
+			
+			for (var i=0;i<=vlanCount;i++){
+				if (document.getElementById("vlan"+i) !== null){
+					if (document.getElementById("vlan"+i).value.length > 1){					
+						var vlan = document.getElementById("vlan"+i).value;
+						output += "create vlan \""+vlan+"\"\n";
+
+						var tag = document.getElementById("tag"+i).value;
+						output += "configure vlan "+vlan+" tag "+tag+"\n";
+
+						var tagged = document.getElementById("tagged"+i).value;
+						output += "configure vlan "+vlan+" add ports "+tagged+" tagged\n";
+
+						var untagged = document.getElementById("untagged"+i).value;
+						output += "configure vlan "+vlan+" add ports "+untagged+" untagged\n";
+
+						var vlanip = document.getElementById("vlanip"+i).value;
+						var vlanmask = document.getElementById("vlanmask"+i).value;
+						output += "configure vlan "+vlan+" ipaddress "+vlanip+" "+vlanmask+"\n";
+					}	
+				}			
+			}		
 	
-			document.getElementById("output").value = extreme;
+			document.getElementById("output").value = output;
+		}	
+
+		function downloadTXT(){
+			var script = document.getElementById('output').value;			
+			var filename = document.getElementById('filename').value;
+			var link = document.createElement('a');
+			mimeType = 'text/plain';
+
+			if(filename.length>1)
+				link.setAttribute('download', filename+".txt");
+			else
+				link.setAttribute('download', "output.txt");
+
+			link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(script));
+			link.click();
 		}
-	
+
+		function downloadXML(){
+			var script = document.getElementById('output').value;
+			var filename = document.getElementById('filename').value;
+			var link = document.createElement('a');
+			mimeType = 'text/plain';
+
+			if(filename.length>1)
+				link.setAttribute('download', filename+".xml");
+			else
+				link.setAttribute('download', "output.xml");
+
+			link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(script));
+			link.click();
+		}
+
+		function toggler(divId) {
+		    $("#"+divId).toggle();
+		}
+
 	</script>
 </head>
-<body>
-	<div class="container">			
-		<center>
-		<p><h4>TDec Network Group - Extreme Script</h4></p>
-	</div>
+<body style="padding-top:70px;">
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span> 
+				</button>
+				<a class="navbar-brand" href="#">TDec Network Group</a>
+			</div>
+			<div class="collapse navbar-collapse" id="myNavbar">
+				<ul class="nav navbar-nav">					
+					<li><a href="#panelSNMP">SNMP</a></li>
+					<li><a href="#panelVLAN">VLAN</a></li>
+					<li><a href="#panelPort">Ports</a></li> 
+					<li><a href="#panelExport">Criar Script</a></li>
+					<li><a href="#panelExport">Exportar Script</a></li> 
+				</ul>
+			</div>
+		</div>
+	</nav>
 
 	<div class="container-fluid">	
 
 			<div class="col-xs-12 col-sm-6 col-md-6">	
 
-				<form class="form-horizontal" role="form">
-
-					<div class="panel panel-default">
-	  					<div class="panel-heading">Informacoes Basicas</div>					
-					    <div class="panel-body">
-						    <div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="sysName" placeholder="SysName">
-							    </div>
-						    </div>
-
-						    <div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2" for="sysContact">SysContact:</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="sysContact" placeholder="sysContact">
-							    </div>
-						    </div>
-						</div>
-					</div>
-					
-
-					<div class="panel panel-default">
-					
-
-	  					<div class="panel-heading">VLANS</div>					
-					    <div class="panel-body">
-
-							<button type="button" class="btn btn-link btn-block">
-								<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>  Adiciona nova VLAN</button><br>
-
-					    	<div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2" for="sysName">VLAN:</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="vlan" placeholder="VLAN">
-							    </div>
-						    </div>
-
-						    <div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2" for="sysName">Tag:</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="tag" placeholder="Tags">
-							    </div>
-						    </div>
-
-					    </div>
-					</div>
-
+				<form class="form-horizontal" role="form">		
+					<!--
 					<div class="form-group">        
 				     	<div class="col-sm-12">
-							<input type="button" value="Criar Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block"><p>
+							<input type="button" value="Configurar SNMP" onclick="javascript:toggler('panelSNMP');" class="btn btn-link btn-block">
 						</div>
-					</div>
+					</div>-->
+
+					<div id="panelSNMP">
+						<div class="panel panel-default">
+	  					<div class="panel-heading">SNMP</div>					
+					    <div class="panel-body">
+							<div class="form-group">
+								<label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
+								<div class="col-sm-8 col-md-10">
+									<input class="form-control" id="sysName" placeholder="SNMP SysName">
+								</div>
+						    </div>
+
+						    <div class="form-group">
+								<label class="control-label col-sm-4 col-md-2" for="sysContact">SysLocation:</label>
+								<div class="col-sm-8 col-md-10">
+									<input class="form-control" id="sysLocation" placeholder="SNMP SysLocation">
+								</div>
+						    </div>
+
+						    <div class="form-group">
+								<label class="control-label col-sm-4 col-md-2" for="sysContact">SysContact:</label>
+								<div class="col-sm-8 col-md-10">
+									<input class="form-control" id="sysContact" placeholder="SNMP SysContact">
+								</div>
+						    </div>
+					   	</div>
+						</div>
+					</div>					
+
+					
+
+					<div class="panel panel-default" id="panelPort">
+					
+	  					<div class="panel-heading">Ports</div>					
+					    <div class="panel-body" id="divPort">
+				    		<div class="form-group">
+								<div class="col-sm-12">
+									<input type="button" value="Configurar nova Port" align="right" onclick="javascript:addPort();" style="padding-top: 7.5px;" class="btn btn-link btn-block ">
+								</div>
+							</div>					    
+					    </div>
+					</div>									
+
+					<div class="panel panel-default" id="panelVLAN">
+						<div class="panel-heading">VLAN 
+							<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();" class="btn btn-link  pull-right"></div>
+							<div class="panel-body" id="divVLAN">
+								<div class="form-group">        
+							     	<div class="col-sm-12">
+										
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="control-label col-sm-1 col-md-1">VLAN:</label>
+									<div class="col-sm-5 col-md-5">
+										<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">
+									</div>
+									<label class="control-label col-sm-1 col-md-1">Tag:</label>
+									<div class="col-sm-5 col-md-5">
+										<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-1 col-md-1">Tag:</label>
+									<div class="col-sm-5 col-md-5">
+										<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">
+									</div>
+									<label class="control-label col-sm-1 col-md-1">Untag:</label>
+									<div class="col-sm-5 col-md-5">
+										<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-1 col-md-1">IP:</label>
+									<div class="col-sm-5 col-md-5">
+										<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">
+									</div>
+									<label class="control-label col-sm-1 col-md-1">Mask:</label>
+									<div class="col-sm-5 col-md-5">
+										<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">
+									</div>
+								</div>
+							</div>							
+					</div>													
 
 				</form>
 
 			</div>
 
 			<div class="col-xs-12 col-sm-6 col-md-6">
-				<textarea id='output' class="form-control" style="width:100% ; height:80%" placeholder="Seu script sera gerado aqui"></textarea>
+				<form class="form-horizontal" role="form">
+
+					<div class="form-group">        
+				     	<div class="col-sm-12">				     		
+							<input type="button" value="Criar Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block">	
+						</div>
+					</div>
+
+					<textarea id='output' class="form-control" rows="15" style="width:100% ; overflow:auto; resize:none" placeholder="Seu script sera criado aqui" ></textarea>
+					<br>
+
+					<div class="panel panel-default" id="panelExport">
+	  					<div class="panel-heading">Exportar Script</div>					
+					    <div class="panel-body">
+						    <div class="form-group">
+							    <label class="control-label col-sm-1 col-md-1" for="sysName">Nome:</label>
+							    <div class="col-sm-11 col-md-11">
+							    	<input class="form-control" id="filename" placeholder="Nome do arquivo">
+							    </div>
+						    </div>
+
+						    <div class="form-group">							    
+							    <div class="col-sm-6 col-md-6">
+							    	<input type="button" value=".TXT" onclick="javascript:downloadTXT();" class="btn btn-primary btn-block">
+							    </div>
+							    <div class="col-sm-6 col-md-6">
+							    	<input type="button" value=".XML" onclick="javascript:downloadXML();" class="btn btn-primary btn-block">
+							    </div>
+						    </div>
+						</div>
+					</div>
+				</form>				
 			</div>			
+
 	</div>				
 </body>
 </html>
