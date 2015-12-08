@@ -24,14 +24,15 @@
 	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script src="js/jquery-1.11.3.js"></script>	
 	<script>
-		var vlanCount = 0;
-		var portCount = 0;
+		var vlanCount = 1;
+		var portCount = 1;
 		var output = "";
 
 		function addPort(){
 			var div = document.createElement('div');
 
-		    div.innerHTML = '<div class="form-group">\
+		    div.innerHTML = '<hr>\
+		    				<div class="form-group">\
 							    <label class="control-label col-sm-4 col-md-2">Port(s):</label>\
 							    <div class="col-sm-8 col-md-10">\
 							    	<input class="form-control" id="port'+portCount+'" placeholder="Port">\
@@ -58,43 +59,42 @@
 		function addVLAN(){			
 			var div = document.createElement('div');
 
-		    div.innerHTML = '<li class="divider"></li>\
-		    						<div class="form-group">\
-										<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
-										<div class="col-sm-5 col-md-5">\
-											<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">\
-										</div>\
-										<label class="control-label col-sm-1 col-md-1">Tag:</label>\
-										<div class="col-sm-5 col-md-5">\
-											<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">\
-										</div>\
-									</div>\
-									<div class="form-group">\
-										<label class="control-label col-sm-1 col-md-1">Tag:</label>\
-										<div class="col-sm-5 col-md-5">\
-											<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">\
-										</div>\
-										<label class="control-label col-sm-1 col-md-1">Untag:</label>\
-										<div class="col-sm-5 col-md-5">\
-											<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">\
-										</div>\
-									</div>\
-									<div class="form-group">\
-										<label class="control-label col-sm-1 col-md-1">IP:</label>\
-										<div class="col-sm-5 col-md-5">\
-											<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">\
-										</div>\
-										<label class="control-label col-sm-1 col-md-1">Mask:</label>\
-										<div class="col-sm-5 col-md-5">\
-											<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">\
-										</div>\
-									</div>';
+		    div.innerHTML = '<hr>\
+		    				<div class="form-group">\
+								<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
+								<div class="col-sm-5 col-md-5">\
+									<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">\
+								</div>\
+								<label class="control-label col-sm-1 col-md-1">Tag:</label>\
+								<div class="col-sm-5 col-md-5">\
+									<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">\
+								</div>\
+							</div>\
+							<div class="form-group">\
+								<label class="control-label col-sm-1 col-md-1">Tag:</label>\
+								<div class="col-sm-5 col-md-5">\
+									<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">\
+								</div>\
+								<label class="control-label col-sm-1 col-md-1">Untag:</label>\
+								<div class="col-sm-5 col-md-5">\
+									<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">\
+								</div>\
+							</div>\
+							<div class="form-group">\
+								<label class="control-label col-sm-1 col-md-1">IP:</label>\
+								<div class="col-sm-5 col-md-5">\
+									<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">\
+								</div>\
+								<label class="control-label col-sm-1 col-md-1">Mask:</label>\
+								<div class="col-sm-5 col-md-5">\
+									<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">\
+								</div>\
+							</div>';
 
 			document.getElementById('divVLAN').appendChild(div);
 
 			vlanCount++;
 		}
-
 
 		function generateScript(){		
 			output = "";
@@ -249,58 +249,74 @@
 
 					
 
-					<div class="panel panel-default" id="panelPort">
+					<div class="panel panel-default" >
 					
-	  					<div class="panel-heading">Ports</div>					
-					    <div class="panel-body" id="divPort">
+	  					<div class="panel-heading" >
+	  						Port(s)
+	  						<div class="btn-group pull-right">
+								<input type="button" value="Configurar outra porta" onclick="javascript:addPort();"  style="margin-top:13px" class="btn btn-success">
+							</div>
+	  					</div>					
+					    <div class="panel-body" id="divPort" style="margin-top:15px">
 				    		<div class="form-group">
-								<div class="col-sm-12">
-									<input type="button" value="Configurar nova Port" align="right" onclick="javascript:addPort();" style="padding-top: 7.5px;" class="btn btn-link btn-block ">
-								</div>
-							</div>					    
+							    <label class="control-label col-sm-4 col-md-2">Port(s):</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="port'+portCount+'" placeholder="Port">
+							    </div>
+						    </div>
+						    <div class="form-group">
+							    <label class="control-label col-sm-4 col-md-2">Display String:</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="dispstring'+portCount+'" placeholder="Display String">
+							    </div>
+						    </div>
+						    <div class="form-group">
+							    <label class="control-label col-sm-4 col-md-2">Description String:</label>
+							    <div class="col-sm-8 col-md-10">
+							    	<input class="form-control" id="descstring'+portCount+'" placeholder="Description String">
+							    </div>
+						    </div>
 					    </div>
 					</div>									
 
-					<div class="panel panel-default" id="panelVLAN">
-						<div class="panel-heading">VLAN 
-							<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();" class="btn btn-link  pull-right"></div>
-							<div class="panel-body" id="divVLAN">
-								<div class="form-group">        
-							     	<div class="col-sm-12">
-										
-									</div>
-								</div>
-
+					<div class="panel panel-default" id="panelVLAN" >
+						<div class="panel-heading">
+							VLAN
+							<div class="btn-group pull-right">
+								<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();"  style="margin-top:13px" class="btn btn-success">
+							</div>
+						</div>
+							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 
 								<div class="form-group">
-									<label class="control-label col-sm-1 col-md-1">VLAN:</label>
-									<div class="col-sm-5 col-md-5">
-										<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">
-									</div>
-									<label class="control-label col-sm-1 col-md-1">Tag:</label>
-									<div class="col-sm-5 col-md-5">
-										<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">
-									</div>
+								<label class="control-label col-sm-1 col-md-1">VLAN:</label>
+								<div class="col-sm-5 col-md-5">
+									<input class="form-control" id="vlan0" placeholder="VLAN">
 								</div>
-								<div class="form-group">
-									<label class="control-label col-sm-1 col-md-1">Tag:</label>
-									<div class="col-sm-5 col-md-5">
-										<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">
-									</div>
-									<label class="control-label col-sm-1 col-md-1">Untag:</label>
-									<div class="col-sm-5 col-md-5">
-										<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">
-									</div>
+								<label class="control-label col-sm-1 col-md-1">Tag:</label>
+								<div class="col-sm-5 col-md-5">
+									<input class="form-control" id="tag0" placeholder="Tags">
 								</div>
-								<div class="form-group">
-									<label class="control-label col-sm-1 col-md-1">IP:</label>
-									<div class="col-sm-5 col-md-5">
-										<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">
-									</div>
-									<label class="control-label col-sm-1 col-md-1">Mask:</label>
-									<div class="col-sm-5 col-md-5">
-										<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">
-									</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label col-sm-1 col-md-1">Tag:</label>
+								<div class="col-sm-5 col-md-5">
+									<input class="form-control" id="tagged0" placeholder="Port(s) Tagged">
 								</div>
+								<label class="control-label col-sm-1 col-md-1">Untag:</label>
+								<div class="col-sm-5 col-md-5">
+									<input class="form-control" id="untagged0" placeholder="Port(s) Untagged">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="control-label col-sm-1 col-md-1">IP:</label>
+								<div class="col-sm-5 col-md-5">
+									<input class="form-control" id="vlanip0" placeholder="IP Address">
+								</div>
+								<label class="control-label col-sm-1 col-md-1">Mask:</label>
+								<div class="col-sm-5 col-md-5">
+									<input class="form-control" id="vlanmask0" placeholder="Mask Address" value="255.255.255.0">
+								</div>
+							</div>
 							</div>							
 					</div>													
 
@@ -330,13 +346,9 @@
 							    </div>
 						    </div>
 
-						    <div class="form-group">							    
-							    <div class="col-sm-6 col-md-6">
-							    	<input type="button" value=".TXT" onclick="javascript:downloadTXT();" class="btn btn-primary btn-block">
-							    </div>
-							    <div class="col-sm-6 col-md-6">
-							    	<input type="button" value=".XML" onclick="javascript:downloadXML();" class="btn btn-primary btn-block">
-							    </div>
+						    <div class="btn-group btn-block">							    
+							    	<a href="javascript:downloadTXT();" class="btn btn-default col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .TXT</a>
+							    	<a href="javascript:downloadXML();" class="btn btn-default col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .XML</a>
 						    </div>
 						</div>
 					</div>
