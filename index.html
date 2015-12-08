@@ -25,35 +25,48 @@
 	<script src="js/jquery-1.11.3.js"></script>	
 	<script>
 		var vlanCount = 1;
+		var switchPort = 1;
 		var portCount = 1;
 		var output = "";
 
-		function addPort(){
-			var div = document.createElement('div');
+		function addPort(portNumber){
+			if(portNumber == 0){
+				var div = document.createElement('div');
 
-		    div.innerHTML = '<hr>\
-		    				<div class="form-group">\
-							    <label class="control-label col-sm-4 col-md-2">Port(s):</label>\
-							    <div class="col-sm-8 col-md-10">\
-							    	<input class="form-control" id="port'+portCount+'" placeholder="Port">\
-							    </div>\
-						    </div>\
-						    <div class="form-group">\
-							    <label class="control-label col-sm-4 col-md-2">Display String:</label>\
-							    <div class="col-sm-8 col-md-10">\
-							    	<input class="form-control" id="dispstring'+portCount+'" placeholder="Display String">\
-							    </div>\
-						    </div>\
-						    <div class="form-group">\
-							    <label class="control-label col-sm-4 col-md-2">Description String:</label>\
-							    <div class="col-sm-8 col-md-10">\
-							    	<input class="form-control" id="descstring'+portCount+'" placeholder="Description String">\
-							    </div>\
-						    </div>';
+			    div.innerHTML = '<div class="form-group">\
+									<div class="col-sm-2 col-md-2">\
+										<input class="form-control" id="customport'+portCount+'" placeholder="Port">\
+									</div>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="customdispstring'+portCount+'" placeholder="Display String">\
+									</div>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="customdescstring'+portCount+'" placeholder="Description String">\
+									</div>\
+								</div>';
 
-			portCount++;
+				document.getElementById('divPort').appendChild(div);
 
-			document.getElementById('divPort').appendChild(div);
+				portCount ++;
+			} else {
+				switchPort = portNumber;
+
+				for(var i=1; i<=portNumber; i++){
+				var div = document.createElement('div');
+
+			    div.innerHTML = '<div class="form-group">\
+									<label class="control-label col-sm-2 col-md-2" id="port'+i+'">Port'+i+'</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="dispstring'+i+'" placeholder="Display String">\
+									</div>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="descstring'+i+'" placeholder="Description String">\
+									</div>\
+								</div>';
+
+				document.getElementById('divPort').appendChild(div);
+				}
+			}			
 		}
 
 		function addVLAN(){			
@@ -110,22 +123,35 @@
 				output += "configure snmp sysLocation \""+sysLocation+"\"\n";
 			}
 
-			for (var i=0;i<=portCount;i++){
+			for (var i=1;i<=portCount;i++){
+				if (document.getElementById("customport"+i) !== null){
+					if (document.getElementById("customport"+i).length>0){
+						var port = document.getElementById("customport"+i).value;
+						var dispstring = document.getElementById("customdispstring"+i).value;
+						output += "configure ports "+i+" display-string "+customdispstring+"\n";
+
+						var descstring = document.getElementById("customdescstring"+i).value;
+						output += "configure ports "+i+" description-string "+customdescstring+"\n";	
+					}
+				}
+			}
+
+			for (var i=1;i<=switchPort;i++){
 				if (document.getElementById("port"+i) !== null){
-					if (document.getElementById("port"+i).length>1){
-						var port = document.getElementById("port"+i).value;		
+					if (document.getElementById("port"+i).length>0){
+						var port = document.getElementById("port"+i).value;
 						var dispstring = document.getElementById("dispstring"+i).value;
-						output += "configure ports "+port+" display-string "+dispstring+"\n";
+						output += "configure ports "+i+" display-string "+dispstring+"\n";
 
 						var descstring = document.getElementById("descstring"+i).value;
-						output += "configure ports "+port+" description-string "+descstring+"\n";	
+						output += "configure ports "+i+" description-string "+descstring+"\n";	
 					}
 				}
 			}
 			
 			for (var i=0;i<=vlanCount;i++){
 				if (document.getElementById("vlan"+i) !== null){
-					if (document.getElementById("vlan"+i).value.length > 1){					
+					if (document.getElementById("vlan"+i).value.length > 0){					
 						var vlan = document.getElementById("vlan"+i).value;
 						output += "create vlan \""+vlan+"\"\n";
 
@@ -195,13 +221,13 @@
 				</button>
 				<a class="navbar-brand" href="#">TDec Network Group</a>
 			</div>
-			<div class="collapse navbar-collapse" id="myNavbar">
+			<div class="collapse navbar-collapse" id="myNavbar" data-toggle="collapse" data-target=".nav-collapse.in">
 				<ul class="nav navbar-nav">					
-					<li><a href="#panelSNMP">SNMP</a></li>
-					<li><a href="#panelVLAN">VLAN</a></li>
-					<li><a href="#panelPort">Ports</a></li> 
-					<li><a href="#panelExport">Criar Script</a></li>
-					<li><a href="#panelExport">Exportar Script</a></li> 
+					<li><a href="#panelSNMP" data-toggle="collapse" data-target=".navbar-collapse">SNMP</a></li>
+					<li><a href="#panelVLAN" data-toggle="collapse" data-target=".navbar-collapse">VLAN</a></li>
+					<li><a href="#panelPort" data-toggle="collapse" data-target=".navbar-collapse">Ports</a></li> 
+					<li><a href="#panelScript" data-toggle="collapse" data-target=".navbar-collapse">Criar Script</a></li>
+					<li><a href="#panelExport" data-toggle="collapse" data-target=".navbar-collapse">Exportar Script</a></li> 
 				</ul>
 			</div>
 		</div>
@@ -253,37 +279,22 @@
 					
 	  					<div class="panel-heading" >
 	  						Port(s)
-	  						<div class="btn-group pull-right">
-								<input type="button" value="Configurar outra porta" onclick="javascript:addPort();"  style="margin-top:13px" class="btn btn-success">
-							</div>
+	  						<div class="btn-group pull-right" style="margin-top:13px">							    
+							    	<a href="javascript:addPort('24');" class="btn btn-default col-xs-4 col-sm-4 col-md-4">24 ports</a>
+							    	<a href="javascript:addPort('48');" class="btn btn-default col-xs-4 col-sm-4 col-md-4">48 ports</a>
+							    	<a href="javascript:addPort('0');" class="btn btn-default col-xs-4 col-sm-4 col-md-$">? port</a>
+						    </div>
 	  					</div>					
 					    <div class="panel-body" id="divPort" style="margin-top:15px">
-				    		<div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2">Port(s):</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="port'+portCount+'" placeholder="Port">
-							    </div>
-						    </div>
-						    <div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2">Display String:</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="dispstring'+portCount+'" placeholder="Display String">
-							    </div>
-						    </div>
-						    <div class="form-group">
-							    <label class="control-label col-sm-4 col-md-2">Description String:</label>
-							    <div class="col-sm-8 col-md-10">
-							    	<input class="form-control" id="descstring'+portCount+'" placeholder="Description String">
-							    </div>
-						    </div>
+							
 					    </div>
 					</div>									
 
 					<div class="panel panel-default" id="panelVLAN" >
 						<div class="panel-heading">
 							VLAN
-							<div class="btn-group pull-right">
-								<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();"  style="margin-top:13px" class="btn btn-success">
+							<div class="btn-group pull-right" style="margin-top:13px">
+								<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();" class="btn btn-default">
 							</div>
 						</div>
 							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 
@@ -327,7 +338,7 @@
 			<div class="col-xs-12 col-sm-6 col-md-6">
 				<form class="form-horizontal" role="form">
 
-					<div class="form-group">        
+					<div class="form-group" id="panelScript">        
 				     	<div class="col-sm-12">				     		
 							<input type="button" value="Criar Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block">	
 						</div>
@@ -347,8 +358,8 @@
 						    </div>
 
 						    <div class="btn-group btn-block">							    
-							    	<a href="javascript:downloadTXT();" class="btn btn-default col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .TXT</a>
-							    	<a href="javascript:downloadXML();" class="btn btn-default col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .XML</a>
+							    	<a href="javascript:downloadTXT();" class="btn btn-default col-xs-6 col-sm-6 col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .TXT</a>
+							    	<a href="javascript:downloadXML();" class="btn btn-default col-xs-6 col-sm-6 col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .XML</a>
 						    </div>
 						</div>
 					</div>
