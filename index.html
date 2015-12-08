@@ -24,11 +24,13 @@
 	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script src="js/jquery-1.11.3.js"></script>	
 	<script>
-		var vlanCount = 1;
+		// Global variables
+		var vlanCount = 0;
 		var switchPort = 1;
 		var portCount = 1;
 		var output = "";
 
+		// Function for default switch ports or custom port
 		function addPort(portNumber){
 			if(portNumber == 0){
 				var div = document.createElement('div');
@@ -69,11 +71,14 @@
 			}			
 		}
 
+		// Function for add new VLAN
 		function addVLAN(){			
 			var div = document.createElement('div');
 
-		    div.innerHTML = '<hr>\
-		    				<div class="form-group">\
+			if(vlanCount>0)
+				div.innerHTML += '<hr>'
+
+		    div.innerHTML += '<div class="form-group">\
 								<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
 								<div class="col-sm-5 col-md-5">\
 									<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">\
@@ -109,21 +114,36 @@
 			vlanCount++;
 		}
 
+		// Generate the script based on what you filled or not.
 		function generateScript(){		
 			output = "";
 
-			if (document.getElementById("sysName").value.length>1){
-				var sysName = document.getElementById("sysName").value;
-				output += "configure snmp sysName \""+sysName+"\"\n";
+			// SNMP Configuration
+			// System Name
+			var sysName = document.getElementById("sysName").value;
+			if (sysName.length>1)				
+				output += "configure snmp sysName \""+sysName+"\"\n";					
 
-				var sysContact = document.getElementById("sysContact").value;
+			// System Location
+			var sysLocation = document.getElementById("sysLocation").value;
+			if(sysLocation.length>1)				
+				output += "configure snmp sysLocation \""+sysLocation+"\"\n";
+
+			// System Contact
+			var sysContact = document.getElementById("sysContact").value;
+			if(sysContact.length>1)
 				output += "configure snmp sysContact \""+sysContact+"\"\n";
 
-				var sysLocation = document.getElementById("sysLocation").value;
-				output += "configure snmp sysLocation \""+sysLocation+"\"\n";
-			}
+			// SNTP Configuration
+			// System SNTP
+			var sysSNTP = document.getElementById("sysSNTP").value;
+			if(sysSNTP.length>1)
+				output += "configure sntp-client primary "+sysSNTP+" vr \"VR-Mgmt\"\n";
+			
+			// Ports Configuration
+			// Custom Port Configuration					
+			for (var i=1; i<=portCount; i++){
 
-			for (var i=1;i<=portCount;i++){
 				if (document.getElementById("customport"+i) !== null){
 					if (document.getElementById("customport"+i).length>0){
 						var port = document.getElementById("customport"+i).value;
@@ -136,46 +156,62 @@
 				}
 			}
 
-			for (var i=1;i<=switchPort;i++){
-				if (document.getElementById("port"+i) !== null){
-					if (document.getElementById("port"+i).length>0){
-						var port = document.getElementById("port"+i).value;
-						var dispstring = document.getElementById("dispstring"+i).value;
-						output += "configure ports "+i+" display-string "+dispstring+"\n";
+			// Default Switch Ports Configuration	
+			for (var i=1;i<=switchPort;i++){			
 
-						var descstring = document.getElementById("descstring"+i).value;
-						output += "configure ports "+i+" description-string "+descstring+"\n";	
-					}
+				if(document.getElementById("dispstring"+i) !== null){
+					var dispstring = document.getElementById("dispstring"+i);
+
+					if(dispstring.value.length>1)
+						output += "configure ports "+i+" display-string "+dispstring.value+"\n";
 				}
+					
+
+				if(document.getElementById("descstring"+i) !== null){
+					var descstring = document.getElementById("descstring"+i);
+
+					if(descstring.value.length>1)
+						output += "configure ports "+i+" description-string "+descstring.value+"\n";
+				}									
 			}
 			
+			// VLAN Configuration			
 			for (var i=0;i<=vlanCount;i++){
-				if (document.getElementById("vlan"+i) !== null){
-					if (document.getElementById("vlan"+i).value.length > 0){					
-						var vlan = document.getElementById("vlan"+i).value;
-						output += "create vlan \""+vlan+"\"\n";
 
-						var tag = document.getElementById("tag"+i).value;
-						output += "configure vlan "+vlan+" tag "+tag+"\n";
+				if(document.getElementById("vlan"+i) !== null){
+					vlan = document.getElementById("vlan"+i);
 
-						var tagged = document.getElementById("tagged"+i).value;
-						output += "configure vlan "+vlan+" add ports "+tagged+" tagged\n";
+					if (vlan.value.length > 0){
+						output += "create vlan \""+vlan.value+"\"\n";
+						
+						tag = document.getElementById("tag"+i);
+						if (tag.value.length > 0)	
+							output += "configure vlan "+vlan.value+" tag "+tag.value+"\n";					
 
-						var untagged = document.getElementById("untagged"+i).value;
-						output += "configure vlan "+vlan+" add ports "+untagged+" untagged\n";
+						tagged = document.getElementById("tagged"+i);	
+						if (tagged.value.length > 0)	
+							output += "configure vlan "+vlan.value+" add ports "+tagged.value+" tagged\n";
+															
+						untagged = document.getElementById("untagged"+i);
+						if (untagged.value.length > 0)
+							output += "configure vlan "+vlan.value+" add ports "+untagged.value+" untagged\n";
+													
+						vlanip = document.getElementById("vlanip"+i);
+						vlanmask = document.getElementById("vlanmask"+i);																	
+						if (vlanip.value.length > 0 && vlanmask.value.length > 0)
+							output += "configure vlan "+vlan+" ipaddress "+vlanip.value+" "+vlanmask.value+"\n";
 
-						var vlanip = document.getElementById("vlanip"+i).value;
-						var vlanmask = document.getElementById("vlanmask"+i).value;
-						output += "configure vlan "+vlan+" ipaddress "+vlanip+" "+vlanmask+"\n";
-					}	
-				}			
+					}
+				}														
 			}		
 	
 			document.getElementById("output").value = output;
 		}	
 
+		// Function for download in TXT file
 		function downloadTXT(){
-			var script = document.getElementById('output').value;			
+			var script = document.getElementById('output').value;	
+			script = script.replace(/\n/g, "\r\n");
 			var filename = document.getElementById('filename').value;
 			var link = document.createElement('a');
 			mimeType = 'text/plain';
@@ -189,8 +225,10 @@
 			link.click();
 		}
 
+		// Function for download in XML file
 		function downloadXML(){
 			var script = document.getElementById('output').value;
+			script = script.replace(/\n/g, "\r\n");
 			var filename = document.getElementById('filename').value;
 			var link = document.createElement('a');
 			mimeType = 'text/plain';
@@ -224,6 +262,7 @@
 			<div class="collapse navbar-collapse" id="myNavbar" data-toggle="collapse" data-target=".nav-collapse.in">
 				<ul class="nav navbar-nav">					
 					<li><a href="#panelSNMP" data-toggle="collapse" data-target=".navbar-collapse">SNMP</a></li>
+					<li><a href="#panelSNTP" data-toggle="collapse" data-target=".navbar-collapse">SNTP</a></li>
 					<li><a href="#panelVLAN" data-toggle="collapse" data-target=".navbar-collapse">VLAN</a></li>
 					<li><a href="#panelPort" data-toggle="collapse" data-target=".navbar-collapse">Ports</a></li> 
 					<li><a href="#panelScript" data-toggle="collapse" data-target=".navbar-collapse">Criar Script</a></li>
@@ -245,10 +284,15 @@
 						</div>
 					</div>-->
 
-					<div id="panelSNMP">
-						<div class="panel panel-default">
-	  					<div class="panel-heading">SNMP</div>					
-					    <div class="panel-body">
+					<div class="panel panel-default">
+  					<div class="panel-heading">
+  						SNMP  						
+  						<div class="btn-group pull-right" style="margin-top:13px">
+							<input type="button" value="Configurar SNTP" onclick="javascript:toggler('panelSNMP');" class="btn btn-default">
+						</div>
+  					</div>
+				    <div class="panel-body" style="margin-top:13px">
+				    	<div id="panelSNMP" style="display:none">
 							<div class="form-group">
 								<label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
 								<div class="col-sm-8 col-md-10">
@@ -268,12 +312,39 @@
 								<div class="col-sm-8 col-md-10">
 									<input class="form-control" id="sysContact" placeholder="SNMP SysContact">
 								</div>
-						    </div>
-					   	</div>
+							</div>
 						</div>
-					</div>					
+				   	</div>
+					</div>
 
-					
+					<div class="panel panel-default">
+  					<div class="panel-heading">
+  						SNTP
+  						<div class="btn-group pull-right" style="margin-top:13px">
+							<input type="button" value="Configurar SNTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
+						</div>
+  					</div>					
+				    <div class="panel-body" style="margin-top:15px">
+						<div class="form-group" id="panelSNTP" style="display:none">
+							<label class="control-label col-sm-4 col-md-2" for="sysContact">SNTP:</label>
+							<div class="col-sm-8 col-md-10">
+								<input class="form-control" id="sysSNTP" placeholder="SNTP Client">
+							</div>
+						</div>	
+					</div>
+					</div>
+
+					<div class="panel panel-default" id="panelVLAN" >
+						<div class="panel-heading">
+							VLAN
+							<div class="btn-group pull-right" style="margin-top:13px">
+								<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();" class="btn btn-default">
+							</div>
+						</div>
+							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 
+								
+							</div>							
+					</div>	
 
 					<div class="panel panel-default" >
 					
@@ -288,47 +359,6 @@
 					    <div class="panel-body" id="divPort" style="margin-top:15px">
 							
 					    </div>
-					</div>									
-
-					<div class="panel panel-default" id="panelVLAN" >
-						<div class="panel-heading">
-							VLAN
-							<div class="btn-group pull-right" style="margin-top:13px">
-								<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();" class="btn btn-default">
-							</div>
-						</div>
-							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 
-								<div class="form-group">
-								<label class="control-label col-sm-1 col-md-1">VLAN:</label>
-								<div class="col-sm-5 col-md-5">
-									<input class="form-control" id="vlan0" placeholder="VLAN">
-								</div>
-								<label class="control-label col-sm-1 col-md-1">Tag:</label>
-								<div class="col-sm-5 col-md-5">
-									<input class="form-control" id="tag0" placeholder="Tags">
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="control-label col-sm-1 col-md-1">Tag:</label>
-								<div class="col-sm-5 col-md-5">
-									<input class="form-control" id="tagged0" placeholder="Port(s) Tagged">
-								</div>
-								<label class="control-label col-sm-1 col-md-1">Untag:</label>
-								<div class="col-sm-5 col-md-5">
-									<input class="form-control" id="untagged0" placeholder="Port(s) Untagged">
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="control-label col-sm-1 col-md-1">IP:</label>
-								<div class="col-sm-5 col-md-5">
-									<input class="form-control" id="vlanip0" placeholder="IP Address">
-								</div>
-								<label class="control-label col-sm-1 col-md-1">Mask:</label>
-								<div class="col-sm-5 col-md-5">
-									<input class="form-control" id="vlanmask0" placeholder="Mask Address" value="255.255.255.0">
-								</div>
-							</div>
-							</div>							
 					</div>													
 
 				</form>
