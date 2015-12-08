@@ -19,6 +19,7 @@
 				configure iproute add default X -->
 
 	<title>TDec Extreme Script</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="css/bootstrap.min.css"/>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -88,50 +89,63 @@
 			switchPort = 1;	
 		}
 		
-		// Function for add new VLAN
-		function addVLAN(){			
+		// Function for add new VLAN configuration
+		function configVLAN(param){			
 			var div = document.createElement('div');
 			div.setAttribute("id", "divVLAN"+vlanCount);
 
 			if(vlanCount>0)
 				div.innerHTML += '<hr>';
-			else if(vlanCount<1)
-				div.innerHTML += '<input id="vlanDefault" type="checkbox" value="configure vlan default delete ports all" checked> Deletar todas as VLANS para VLAN Default</input>\
+			
+			if(document.getElementById('vlanDefault') == null)
+				div.innerHTML += '<p><input id="vlanDefault" type="checkbox" value="" checked> Deletar todas as VLANS para VLAN Default</input></p>\
+					<p><input id="stpd" type="checkbox" value="" checked> Configurar Spanning Tree</input></p>\
 					<hr>';
 
-		    div.innerHTML += '<div class="form-group">\
-								<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
-								<div class="col-sm-5 col-md-5">\
-									<input class="form-control" id="vlan'+vlanCount+'" placeholder="VLAN">\
+			if(param == "add")
+			    div.innerHTML += '<div class="form-group">\
+									<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="vlan'+vlanCount+'" placeholder="Create VLAN">\
+									</div>\
+									<label class="control-label col-sm-1 col-md-1">Tag:</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">\
+									</div>\
 								</div>\
-								<label class="control-label col-sm-1 col-md-1">Tag:</label>\
-								<div class="col-sm-5 col-md-5">\
-									<input class="form-control" id="tag'+vlanCount+'" placeholder="Tags">\
+								<div class="form-group">\
+									<label class="control-label col-sm-1 col-md-1">Tag:</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">\
+									</div>\
+									<label class="control-label col-sm-1 col-md-1">Untag:</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">\
+									</div>\
 								</div>\
-							</div>\
-							<div class="form-group">\
-								<label class="control-label col-sm-1 col-md-1">Tag:</label>\
-								<div class="col-sm-5 col-md-5">\
-									<input class="form-control" id="tagged'+vlanCount+'" placeholder="Port(s) Tagged">\
-								</div>\
-								<label class="control-label col-sm-1 col-md-1">Untag:</label>\
-								<div class="col-sm-5 col-md-5">\
-									<input class="form-control" id="untagged'+vlanCount+'" placeholder="Port(s) Untagged">\
-								</div>\
-							</div>\
-							<div class="form-group">\
-								<label class="control-label col-sm-1 col-md-1">IP:</label>\
-								<div class="col-sm-5 col-md-5">\
-									<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">\
-								</div>\
-								<label class="control-label col-sm-1 col-md-1">Mask:</label>\
-								<div class="col-sm-5 col-md-5">\
-									<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">\
-								</div>\
-							</div>';
+								<div class="form-group">\
+									<label class="control-label col-sm-1 col-md-1">IP:</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="vlanip'+vlanCount+'" placeholder="IP Address">\
+									</div>\
+									<label class="control-label col-sm-1 col-md-1">Mask:</label>\
+									<div class="col-sm-5 col-md-5">\
+										<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">\
+									</div>\
+								</div>';
+			else
+				div.innerHTML += '<div class="form-group">\
+										<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="delvlan'+vlanCount+'" placeholder="Delete VLAN">\
+										</div>\
+										<label class="control-label col-sm-1 col-md-1">Ports:</label>\
+										<div class="col-sm-5 col-md-5">\
+											<input class="form-control" id="delports'+vlanCount+'" placeholder="Port(s)">\
+										</div>\
+									</div>';
 
 			document.getElementById('divVLAN').appendChild(div);		
-
 			vlanCount++;
 		}
 
@@ -167,8 +181,9 @@
 			// System SNTP			
 			var sysSNTP = document.getElementById("sysSNTP").value;
 			if(sysSNTP.length>1 && document.getElementById('panelSNTP').style.display !== "none"){
-				output += "configure sntp-client primary "+sysSNTP+" vr \"VR-Mgmt\"\n";
-				output += "configure timezone name BRT -180 autodst name BRST 60 begins every third sunday october at 0:00 ends every third sunday february at 0:00"
+				output += "configure sntp-client primary "+sysSNTP+" vr \"VR-Default\"\n";				
+				output += "enable sntp-client\n";
+				output += "configure timezone name BRT -180 autodst name BRST 60 begins every third sunday october at 0:00 ends every third sunday february at 0:00\n"
 			}
 				
 			
@@ -214,8 +229,8 @@
 			
 			// VLAN Configuration				
 			if(document.getElementById("vlanDefault") !== null && document.getElementById("vlanDefault").checked)
-				output += "configure vlan default delete all\n";
-
+				output += "configure vlan Default delete all\n";		
+		
 			for (var i=0;i<=vlanCount;i++){
 
 				if(document.getElementById("vlan"+i) !== null){
@@ -240,10 +255,69 @@
 						vlanmask = document.getElementById("vlanmask"+i);																	
 						if (vlanip.value.length > 0 && vlanmask.value.length > 0)
 							output += "configure vlan "+vlan.value+" ipaddress "+vlanip.value+" "+vlanmask.value+"\n";
-
 					}
+				}
+
+				if(document.getElementById("delvlan"+i) !== null){
+					delvlan = document.getElementById("delvlan"+i);
+					delports = document.getElementById("delports"+i);
+
+					if(delvlan.value.length > 0 && delports.value.length > 0)
+						output += "configure vlan "+delvlan.value+" delete ports"+delports.value+"\n";
 				}														
-			}		
+			}
+			// Configure Spanning Tree
+			if(document.getElementById("stpd") !== null && document.getElementById("stpd").checked){
+				output += "configure stpd s0 delete vlan Default ports all\n";
+				output += "disable stpd s0 auto-bind vlan Default\n";
+				output += "configure stod s0 auto-bind Default\n";
+				output += "create stpd s1\n";
+				output += "configure stpd s1 mode mstp msti 1\n";
+
+				output += "enable stpd s1 auto-bind vlan Default\n";
+
+				for (var i=0;i<=vlanCount;i++)
+					if(document.getElementById("vlan"+i) !== null){
+						vlan = document.getElementById("vlan"+i);
+
+						if(vlan.value.length > 0)
+							output += "enable stpd s1 auto-bind vlan "+vlan.value+"\n";					
+					}
+				
+				output += "enable stpd s0\n";
+				output += "enable stpd s1\n";
+			}
+				
+
+			// Additional Configuration
+			// ssh2 options
+			if(document.getElementById('panelAdditional').style.display !== "none"){
+				var confssh2  = document.getElementById("confssh2");
+				if (confssh2.checked)
+					output += "configure ssh2 key\n";
+
+				var enablessh2 = document.getElementById("enablessh2");
+				if (enablessh2.checked)
+					output += "enable ssh2\n";
+
+				var disablehttp  = document.getElementById("confssh2");
+				if (disablehttp.checked)
+					output += "disable web http\n";			
+			
+			// Banner Options	
+				if (document.getElementById("bannerCheck").checked){
+					var bannerAfter = document.getElementById("bannerAfter").value;
+					var bannerBefore = document.getElementById("bannerBefore").value;
+
+					if(bannerBefore.length>0)
+						output += "configure banner banner-login\n"+bannerBefore+"\n\n";
+
+					if(bannerAfter.length>0)
+						output += "configure banner after-login\n"+bannerAfter+"\n\n";				
+				}
+			}
+				
+			
 	
 			document.getElementById("output").value = output;
 		}	
@@ -280,6 +354,23 @@
 
 			link.setAttribute('href', 'data:' + mimeType  +  ';charset=utf-8,' + encodeURIComponent(script));
 			link.click();
+		}
+
+		function exportEmail(){
+			var script = document.getElementById('output').value;
+			script = script.replace(/\n/g, "\r\n");
+			var subject = document.getElementById('filename').value;
+					
+            var body = "Script gerado pelo Gerador de Scripts da TDec Network Group (www.tdec.com.br):\r\n\r\n";
+            body += script;
+            var uri = "mailto:?subject=";
+            if(filename.length>1)
+            	uri += encodeURIComponent(subject);
+            else
+            	uri += encodeURIComponent("TDec Network Group - Gerador de Scripts");
+            uri += "&body=";
+            uri += encodeURIComponent(body);
+            window.open(uri);
 		}
 
 		function toggler(divId) {
@@ -326,7 +417,7 @@
   					<div class="panel-heading">
   						SNMP  						
   						<div class="btn-group pull-right" style="margin-top:13px">
-							<input type="button" value="Configurar SNTP" onclick="javascript:toggler('panelSNMP');" class="btn btn-default">
+							<input type="button" value="Configurar SNMP" onclick="javascript:toggler('panelSNMP');" class="btn btn-default">
 						</div>
   					</div>
 				    <div class="panel-body" style="margin-top:13px">
@@ -356,32 +447,37 @@
 					</div>
 
 					<div class="panel panel-default">
-  					<div class="panel-heading">
-  						SNTP
-  						<div class="btn-group pull-right" style="margin-top:13px">
-							<input type="button" value="Configurar SNTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
-						</div>
-  					</div>					
-				    <div class="panel-body" style="margin-top:15px">
-						<div class="form-group" id="panelSNTP" style="display:none">
-							<label class="control-label col-sm-4 col-md-2" for="sysContact">SNTP:</label>
-							<div class="col-sm-8 col-md-10">
-								<input class="form-control" id="sysSNTP" placeholder="SNTP Client" value="10.0.2.130">
+						<div class="panel-heading">
+	  						NTP
+							<div class="btn-group pull-right" style="margin-top:13px">
+								<input type="button" value="Configurar NTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
 							</div>
-						</div>	
-					</div>
+	  					</div>					
+						<div class="panel-body" style="margin-top:15px">				    	
+							<div style="display:none" id="panelSNTP">								
+								<div class="form-group">
+									<label class="control-label col-xs-2 col-md-1" for="sysContact">NTP:</label>
+									<div class="col-xs-10 col-md-11">
+										<input class="form-control" id="sysSNTP" placeholder="IP Address">
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 
 					<div class="panel panel-default" id="panelVLAN" >
 						<div class="panel-heading">
 							VLAN
 							<div class="btn-group pull-right" style="margin-top:13px">
-								<a href="javascript:addVLAN();" class="btn btn-default col-xs-6 col-sm-6 col-md-6">
-									<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> VLAN
+								<a href="javascript:configVLAN('add');" class="btn btn-default col-xs-4 col-sm-4 col-md-4">
+									<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> Create
 								</a>
-								<a href="javascript:remVLAN();" class="btn btn-default col-xs-6 col-sm-6 col-md-6">
-									<span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> VLAN
+								<a href="javascript:configVLAN('del');" class="btn btn-default col-xs-4 col-sm-4 col-md-4">
+									<span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> Delete
 								</a>
+								<a href="javascript:remVLAN();" class="btn btn-default col-xs-4 col-sm-4 col-md-4">
+									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> VLANS
+								</a>								
 							</div>
 						</div>
 							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 															
@@ -396,16 +492,52 @@
 	  						<div class="btn-group pull-right" style="margin-top:13px">							    
 								<a href="javascript:addPort('24');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">24 ports</a>
 								<a href="javascript:addPort('48');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">48 ports</a>
-								<a href="javascript:addPort('0');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">? port</a>
+								<a href="javascript:addPort('0');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">
+									<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> port
+								</a>
 								<a href="javascript:remPort();" class="btn btn-default col-xs-3 col-sm-3 col-md-3">
-									<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> ports
-								</a>					
+									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> ports
+								</a>
 						    </div>
 	  					</div>					
 					    <div class="panel-body" id="divPort" style="margin-top:15px">
 							
 					    </div>
-					</div>													
+					</div>	
+
+					<div class="panel panel-default">
+						<div class="panel-heading">
+	  						Configuracoes Adicionais
+							<div class="btn-group pull-right" style="margin-top:13px">
+								<input type="button" value="Configurar Adicionais" onclick="javascript:toggler('panelAdditional');" class="btn btn-default">
+							</div>
+	  					</div>					
+						<div class="panel-body" style="margin-top:15px">	
+							<div id="panelAdditional" style="display:none">
+								
+								<p><input id="confssh2" type="checkbox" value="configure vlan default delete ports all" checked> configure ssh2 key</input></p>
+								<p><input id="enablessh2" type="checkbox" value="configure vlan default delete ports all" checked> enable ssh2</input></p>
+								<p><input id="disablehttp" type="checkbox" value="configure vlan default delete ports all" checked> disable web http</input></p>
+
+								<hr>
+
+								<input id="bannerCheck" type="checkbox" value="configure vlan default delete ports all"> Adicionar Banner Before e After</input>
+								<div class="form-group" style="margin-top:20px">
+									<label class="control-label col-xs-2 col-md-2">Banner Before:</label>
+									<div class="col-xs-10 col-md-10">
+										<textarea class="form-control" id="bannerBefore" placeholder="Banner Before" rows="5" style="overflow:auto; resize:none">************************************************************&#13;&#10;ACESSO NAO AUTORIZADO&#13;&#10;************************************************************</textarea>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-xs-2 col-md-2">Banner After:</label>
+									<div class="col-xs-10 col-md-10">
+										<textarea class="form-control" id="bannerAfter" placeholder="Banner After" rows="5" style="overflow:auto; resize:none">************************************************************&#13;&#10;ACESSO MONITORADO&#13;&#10;************************************************************</textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+												
 
 				</form>
 
@@ -435,7 +567,7 @@
 
 						    <div class="btn-group btn-block">							    
 							    	<a href="javascript:downloadTXT();" class="btn btn-default col-xs-6 col-sm-6 col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .TXT</a>
-							    	<a href="javascript:downloadXML();" class="btn btn-default col-xs-6 col-sm-6 col-md-6"><span class="glyphicon glyphicon-save" aria-hidden="true"></span> .XML</a>
+							    	<a href="javascript:exportEmail();" class="btn btn-default col-xs-6 col-sm-6 col-md-6"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Email</a>
 						    </div>
 						</div>
 					</div>
