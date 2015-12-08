@@ -9,7 +9,7 @@
 
 				enable sharing X grouping X algorithm address-based L2 lacp
 
-				configure vlan default delete ports X 
+				configure vlan X delete ports X 
 				create vlan \"X\"
 				configure vlan X tag X
 
@@ -25,15 +25,16 @@
 	<script src="js/jquery-1.11.3.js"></script>	
 	<script>
 		// Global variables
-		var vlanCount = 0;
+		var vlanCount = 0;		
+		var portCount = 0;
 		var switchPort = 1;
-		var portCount = 1;
 		var output = "";
 
 		// Function for default switch ports or custom port
 		function addPort(portNumber){
 			if(portNumber == 0){
 				var div = document.createElement('div');
+				div.setAttribute("id", "customPort");
 
 			    div.innerHTML = '<div class="form-group">\
 									<div class="col-sm-2 col-md-2">\
@@ -53,8 +54,12 @@
 			} else {
 				switchPort = portNumber;
 
+				while(document.getElementById('switchPort') !== null)
+					document.getElementById('switchPort').remove();
+
 				for(var i=1; i<=portNumber; i++){
 				var div = document.createElement('div');
+				div.setAttribute("id", "switchPort");
 
 			    div.innerHTML = '<div class="form-group">\
 									<label class="control-label col-sm-2 col-md-2" id="port'+i+'">Port'+i+'</label>\
@@ -71,12 +76,28 @@
 			}			
 		}
 
+		// Function for remove the last VLAN
+		function remPort(){
+			while(document.getElementById('customPort') !== null)
+				document.getElementById('customPort').remove();
+
+			while(document.getElementById('switchPort') !== null)
+				document.getElementById('switchPort').remove();		
+
+			portCount = 0;
+			switchPort = 1;	
+		}
+		
 		// Function for add new VLAN
 		function addVLAN(){			
 			var div = document.createElement('div');
+			div.setAttribute("id", "divVLAN"+vlanCount);
 
 			if(vlanCount>0)
-				div.innerHTML += '<hr>'
+				div.innerHTML += '<hr>';
+			else if(vlanCount<1)
+				div.innerHTML += '<input id="vlanDefault" type="checkbox" value="configure vlan default delete ports all" checked> Deletar todas as VLANS para VLAN Default</input>\
+					<hr>';
 
 		    div.innerHTML += '<div class="form-group">\
 								<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
@@ -109,9 +130,17 @@
 								</div>\
 							</div>';
 
-			document.getElementById('divVLAN').appendChild(div);
+			document.getElementById('divVLAN').appendChild(div);		
 
 			vlanCount++;
+		}
+
+		// Function for remove the last VLAN
+		function remVLAN(){
+			if(document.getElementById('divVLAN'+(vlanCount-1)) !== null){
+				document.getElementById('divVLAN'+(vlanCount-1)).remove();
+				vlanCount--;
+			}			
 		}
 
 		// Generate the script based on what you filled or not.
@@ -135,23 +164,31 @@
 				output += "configure snmp sysContact \""+sysContact+"\"\n";
 
 			// SNTP Configuration
-			// System SNTP
+			// System SNTP			
 			var sysSNTP = document.getElementById("sysSNTP").value;
-			if(sysSNTP.length>1)
+			if(sysSNTP.length>1 && document.getElementById('panelSNTP').style.display !== "none"){
 				output += "configure sntp-client primary "+sysSNTP+" vr \"VR-Mgmt\"\n";
+				output += "configure timezone name BRT -180 autodst name BRST 60 begins every third sunday october at 0:00 ends every third sunday february at 0:00"
+			}
+				
 			
 			// Ports Configuration
 			// Custom Port Configuration					
-			for (var i=1; i<=portCount; i++){
+			for (var i=0; i<=portCount; i++){				
 
-				if (document.getElementById("customport"+i) !== null){
-					if (document.getElementById("customport"+i).length>0){
-						var port = document.getElementById("customport"+i).value;
-						var dispstring = document.getElementById("customdispstring"+i).value;
-						output += "configure ports "+i+" display-string "+customdispstring+"\n";
+				if (document.getElementById("customport"+i) !== null){					
+					var port = document.getElementById("customport"+i);
 
-						var descstring = document.getElementById("customdescstring"+i).value;
-						output += "configure ports "+i+" description-string "+customdescstring+"\n";	
+					if (port.value.length > 0){
+						var dispstring = document.getElementById("customdispstring"+i);
+
+						if(dispstring.value.length > 1)
+							output += "configure ports "+port.value+" display-string "+dispstring.value+"\n";				
+
+						var descstring = document.getElementById("customdescstring"+i);				
+
+						if(descstring.value.length > 1)
+							output += "configure ports "+port.value+" description-string "+descstring.value+"\n";
 					}
 				}
 			}
@@ -175,7 +212,10 @@
 				}									
 			}
 			
-			// VLAN Configuration			
+			// VLAN Configuration				
+			if(document.getElementById("vlanDefault") !== null && document.getElementById("vlanDefault").checked)
+				output += "configure vlan default delete all\n";
+
 			for (var i=0;i<=vlanCount;i++){
 
 				if(document.getElementById("vlan"+i) !== null){
@@ -199,7 +239,7 @@
 						vlanip = document.getElementById("vlanip"+i);
 						vlanmask = document.getElementById("vlanmask"+i);																	
 						if (vlanip.value.length > 0 && vlanmask.value.length > 0)
-							output += "configure vlan "+vlan+" ipaddress "+vlanip.value+" "+vlanmask.value+"\n";
+							output += "configure vlan "+vlan.value+" ipaddress "+vlanip.value+" "+vlanmask.value+"\n";
 
 					}
 				}														
@@ -246,6 +286,10 @@
 		    $("#"+divId).toggle();
 		}
 
+		function refresh() {
+			location.reload();
+		}
+
 	</script>
 </head>
 <body style="padding-top:70px;">
@@ -257,10 +301,10 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span> 
 				</button>
-				<a class="navbar-brand" href="#">TDec Network Group</a>
+				<a class="navbar-brand" href="javascript:refresh();">TDec Network Group</a>
 			</div>
 			<div class="collapse navbar-collapse" id="myNavbar" data-toggle="collapse" data-target=".nav-collapse.in">
-				<ul class="nav navbar-nav">					
+				<ul class="nav navbar-nav">													
 					<li><a href="#panelSNMP" data-toggle="collapse" data-target=".navbar-collapse">SNMP</a></li>
 					<li><a href="#panelSNTP" data-toggle="collapse" data-target=".navbar-collapse">SNTP</a></li>
 					<li><a href="#panelVLAN" data-toggle="collapse" data-target=".navbar-collapse">VLAN</a></li>
@@ -277,12 +321,6 @@
 			<div class="col-xs-12 col-sm-6 col-md-6">	
 
 				<form class="form-horizontal" role="form">		
-					<!--
-					<div class="form-group">        
-				     	<div class="col-sm-12">
-							<input type="button" value="Configurar SNMP" onclick="javascript:toggler('panelSNMP');" class="btn btn-link btn-block">
-						</div>
-					</div>-->
 
 					<div class="panel panel-default">
   					<div class="panel-heading">
@@ -328,7 +366,7 @@
 						<div class="form-group" id="panelSNTP" style="display:none">
 							<label class="control-label col-sm-4 col-md-2" for="sysContact">SNTP:</label>
 							<div class="col-sm-8 col-md-10">
-								<input class="form-control" id="sysSNTP" placeholder="SNTP Client">
+								<input class="form-control" id="sysSNTP" placeholder="SNTP Client" value="10.0.2.130">
 							</div>
 						</div>	
 					</div>
@@ -338,10 +376,15 @@
 						<div class="panel-heading">
 							VLAN
 							<div class="btn-group pull-right" style="margin-top:13px">
-								<input type="button" value="Configurar nova VLAN" onclick="javascript:addVLAN();" class="btn btn-default">
+								<a href="javascript:addVLAN();" class="btn btn-default col-xs-6 col-sm-6 col-md-6">
+									<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> VLAN
+								</a>
+								<a href="javascript:remVLAN();" class="btn btn-default col-xs-6 col-sm-6 col-md-6">
+									<span class="glyphicon glyphicon-minus-sign" aria-hidden="true"></span> VLAN
+								</a>
 							</div>
 						</div>
-							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 
+							<div class="panel-body" id="divVLAN" style="margin-top:15px"> 															
 								
 							</div>							
 					</div>	
@@ -351,9 +394,12 @@
 	  					<div class="panel-heading" >
 	  						Port(s)
 	  						<div class="btn-group pull-right" style="margin-top:13px">							    
-							    	<a href="javascript:addPort('24');" class="btn btn-default col-xs-4 col-sm-4 col-md-4">24 ports</a>
-							    	<a href="javascript:addPort('48');" class="btn btn-default col-xs-4 col-sm-4 col-md-4">48 ports</a>
-							    	<a href="javascript:addPort('0');" class="btn btn-default col-xs-4 col-sm-4 col-md-$">? port</a>
+								<a href="javascript:addPort('24');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">24 ports</a>
+								<a href="javascript:addPort('48');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">48 ports</a>
+								<a href="javascript:addPort('0');" class="btn btn-default col-xs-3 col-sm-3 col-md-3">? port</a>
+								<a href="javascript:remPort();" class="btn btn-default col-xs-3 col-sm-3 col-md-3">
+									<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> ports
+								</a>					
 						    </div>
 	  					</div>					
 					    <div class="panel-body" id="divPort" style="margin-top:15px">
