@@ -71,8 +71,8 @@ function configVLAN(param){
 		div.innerHTML += '<hr>';
 	
 	if(document.getElementById('vlanDefault') == null)
-		div.innerHTML += '<p><input id="vlanDefault" type="checkbox" value="" checked> Deletar todas as VLANS para VLAN Default</input></p>\
-			<p><input id="stpd" type="checkbox" value="" checked> Configurar Spanning Tree</input></p>\
+		div.innerHTML += '<p><input id="vlanDefault" type="checkbox" value=""> Deletar todas as VLANS para VLAN Default</input></p>\
+			<p><input id="stpd" type="checkbox" value=""> Configurar Spanning Tree para as VLANS criadas</input></p>\
 			<hr>';
 
 	if(param == "add")
@@ -105,7 +105,17 @@ function configVLAN(param){
 							<div class="col-sm-5 col-md-5">\
 								<input class="form-control" id="vlanmask'+vlanCount+'" placeholder="Mask Address" value="255.255.255.0">\
 							</div>\
+						</div>\
+						<div class="form-group">\
+							<div class="col-sm-6 col-md-6">\
+								<input id="vlanIpFowading'+vlanCount+'" type="checkbox"> Enable IP Fowarding</input>\
+							</div>\
+							<div class="col-sm-6 col-md-6">\
+								<input id="vlanLoopBack'+vlanCount+'" type="checkbox"> Enable Loop-Back Mode</input>\
+							</div>\
 						</div>';
+
+						
 	else
 		div.innerHTML += '<div class="form-group">\
 								<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
@@ -228,6 +238,12 @@ function generateScript(){
 				vlanmask = document.getElementById("vlanmask"+i);																	
 				if (vlanip.value.length > 0 && vlanmask.value.length > 0)
 					output += "configure vlan "+vlan.value+" ipaddress "+vlanip.value+" "+vlanmask.value+"\n";
+					
+				if (document.getElementById("vlanIpFowading"+i).checked)
+					output += "enable ipforwarding vlan "+vlan.value+"\n";
+
+				if (document.getElementById("vlanLoopBack"+i).checked)
+					output += "enable loopback-mode vlan "+vlan.value+"\n";
 			}
 		}
 
@@ -273,7 +289,7 @@ function generateScript(){
 		if (enablessh2.checked)
 			output += "enable ssh2\n";
 
-		var disablehttp  = document.getElementById("confssh2");
+		var disablehttp  = document.getElementById("disablehttp");
 		if (disablehttp.checked)
 			output += "disable web http\n";			
 	
@@ -283,10 +299,10 @@ function generateScript(){
 			var bannerBefore = document.getElementById("bannerBefore").value;
 
 			if(bannerBefore.length>0)
-				output += "configure banner banner-login\n"+bannerBefore+"\n\n";
+				output += "configure banner banner-login\n"+bannerBefore+"\n\n\n";
 
 			if(bannerAfter.length>0)
-				output += "configure banner after-login\n"+bannerAfter+"\n\n";				
+				output += "configure banner after-login\n"+bannerAfter+"\n\n\n";				
 		}
 	}
 		
@@ -353,3 +369,11 @@ function toggler(divId) {
 function refresh() {
 	location.reload();
 }
+
+/**$(function() {
+	$(".lined").linedtextarea(
+		{selectedLine: 1}
+	);
+
+	$("#output").linedtextarea();
+});*/
