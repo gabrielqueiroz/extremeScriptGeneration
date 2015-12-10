@@ -27,15 +27,15 @@
 				<a class="navbar-brand" href="javascript:refresh();">TDec Network Group</a>
 			</div>
 			<!-- Navigation Itens -->
-			<div class="collapse navbar-collapse" id="myNavbar" data-toggle="collapse" data-target=".nav-collapse.in">
+			<div class="collapse navbar-collapse" id="myNavbar">
 				<ul class="nav navbar-nav">								
-					<li><a href="#panelSNMP" data-toggle="collapse" data-target=".navbar-collapse">SNMP</a></li>
-					<li><a href="#panelSNTP" data-toggle="collapse" data-target=".navbar-collapse">SNTP</a></li>
-					<li><a href="#panelVLAN" data-toggle="collapse" data-target=".navbar-collapse">VLAN</a></li>
-					<li><a href="#panelPorts" data-toggle="collapse" data-target=".navbar-collapse">Ports</a></li> 
-					<li><a href="#panelAdd" data-toggle="collapse" data-target=".navbar-collapse">Adicionais</a></li> 
-					<li><a href="#panelScript" data-toggle="collapse" data-target=".navbar-collapse">Criar Script</a></li>
-					<li><a href="#panelExport" data-toggle="collapse" data-target=".navbar-collapse">Exportar Script</a></li> 
+					<li><a href="#panelSNMP" data-toggle="collapse" data-target=".nav-collapse.in">System</a></li>
+					<li><a href="#panelSNTP" data-toggle="collapse" data-target=".nav-collapse.in">NTP</a></li>
+					<li><a href="#panelVLAN" data-toggle="collapse" data-target=".nav-collapse.in">VLAN</a></li>
+					<li><a href="#panelPorts" data-toggle="collapse" data-target=".nav-collapse.in">Ports</a></li> 
+					<li><a href="#panelAdd" data-toggle="collapse" data-target=".nav-collapse.in">Adicionais</a></li> 
+					<li><a href="#panelScript" data-toggle="collapse" data-target=".nav-collapse.in">Criar Script</a></li>
+					<li><a href="#panelExport" data-toggle="collapse" data-target=".nav-collapse.in">Exportar Script</a></li> 
 				</ul>
 			</div>
 		</div>
@@ -46,9 +46,9 @@
 		<form class="form-horizontal" role="form">		
 			<!-- SNMP Group -->
 			<div class="panel panel-default">
-				<div class="panel-heading">SNMP
+				<div class="panel-heading">System
 					<div class="btn-group pull-right">
-						<input type="button" value="Configurar SNMP" onclick="javascript:toggler('panelSNMP');" class="btn btn-default col-md-12">
+						<input type="button" value="Configurar System" onclick="javascript:toggler('panelSNMP');" class="btn btn-default col-md-12">
 					</div>
 				</div>
 				<div class="panel-body">
@@ -56,19 +56,19 @@
 						<div class="form-group">
 							<label class="control-label col-sm-4 col-md-2" for="sysName">SysName:</label>
 							<div class="col-sm-8 col-md-10">
-								<input class="form-control" id="sysName" placeholder="SNMP SysName">
+								<input class="form-control" id="sysName" placeholder="System Name">
 							</div>
 					    </div>
 					    <div class="form-group">
 							<label class="control-label col-sm-4 col-md-2" for="sysContact">SysLocation:</label>
 							<div class="col-sm-8 col-md-10">
-								<input class="form-control" id="sysLocation" placeholder="SNMP SysLocation">
+								<input class="form-control" id="sysLocation" placeholder="System Location">
 							</div>
 					    </div>
 					    <div class="form-group">
 							<label class="control-label col-sm-4 col-md-2" for="sysContact">SysContact:</label>
 							<div class="col-sm-8 col-md-10">
-								<input class="form-control" id="sysContact" placeholder="SNMP SysContact">
+								<input class="form-control" id="sysContact" placeholder="System Contact">
 							</div>
 						</div>
 					</div>
@@ -77,15 +77,15 @@
 
 			<!-- SNTP Group -->
 			<div class="panel panel-default">
-				<div class="panel-heading">SNTP
+				<div class="panel-heading">NTP
 					<div class="btn-group pull-right">
-						<input type="button" value="Configurar SNTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
+						<input type="button" value="Configurar NTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
 					</div>
 				</div>					
 				<div class="panel-body">				    	
 					<div style="display:none" id="panelSNTP">								
 						<div class="form-group">
-							<label class="control-label col-xs-2 col-md-1" for="sysContact">SNTP:</label>
+							<label class="control-label col-xs-2 col-md-1" for="sysContact">NTP:</label>
 							<div class="col-xs-10 col-md-11">
 								<input class="form-control" id="sysSNTP" placeholder="IP Address">
 							</div>
