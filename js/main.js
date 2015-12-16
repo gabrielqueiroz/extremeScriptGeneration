@@ -64,16 +64,23 @@ function remPort(){
 
 // Function for add new VLAN configuration
 function configVLAN(param){			
-	var div = document.createElement('div');
-	div.setAttribute("id", "divVLAN"+vlanCount);
+	var vlanMore = document.createElement('div');
 
-	if(vlanCount>0)
-		div.innerHTML += '<hr>';
-	
-	if(document.getElementById('vlanDefault') == null)
-		div.innerHTML += '<p><input id="vlanDefault" type="checkbox" value=""> Deletar todas as VLANS para VLAN Default</input></p>\
-			<p><input id="stpd" type="checkbox" value=""> Configurar Spanning Tree para as VLANS criadas</input></p>\
-			<hr>';
+	if(document.getElementById('vlanMore') == null){
+		vlanMore.innerHTML += '<p><input id="vlanDefault" type="checkbox" value="" checked> Deletar VLAN Default para todas as portas</input></p>\
+			<p><input id="stpd" type="checkbox" value="" checked> Configurar Spanning Tree para as VLANS criadas</input></p>\
+			<div class="form-group">\
+				<label class="control-label col-sm-4 col-md-2" for="sysContact">Gateway:</label>\
+				<div class="col-sm-8 col-md-10">\
+					<input class="form-control" id="gateway" placeholder="Default Gateway" value="10.8.16.1">\
+				</div>\
+			</div>';
+		vlanMore.setAttribute("id", "vlanMore");
+		document.getElementById('divVLAN').appendChild(vlanMore);
+	}
+		
+	var div = document.createElement('div');
+	div.setAttribute("id", "divVLAN"+vlanCount);	
 
 	if(param == "add")
 	    div.innerHTML += '<div class="form-group">\
@@ -113,6 +120,12 @@ function configVLAN(param){
 							<div class="col-sm-6 col-md-6">\
 								<input id="vlanLoopBack'+vlanCount+'" type="checkbox"> Enable Loop-Back Mode</input>\
 							</div>\
+						</div>\
+						<div class="form-group">\
+							<div class="col-sm-12 col-md-12">\
+								<a href="javascript:remVLAN('+vlanCount+');" class="btn btn-default pull-right">\
+									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> VLAN</a>\
+							</div>\
 						</div>';
 
 						
@@ -133,11 +146,18 @@ function configVLAN(param){
 }
 
 // Function for remove the last VLAN
-function remVLAN(){
-	if(document.getElementById('divVLAN'+(vlanCount-1)) !== null){
-		document.getElementById('divVLAN'+(vlanCount-1)).remove();
-		vlanCount--;
-	}			
+function remVLAN(vlan){
+	if(document.getElementById('divVLAN'+vlan) !== null)
+		document.getElementById('divVLAN'+vlan).remove();
+	
+	existsvlan = false;
+
+	for(i=0; i<vlanCount; i++)
+		if(document.getElementById('divVLAN'+i) !== null)
+			existsvlan = true;
+
+	if(!existsvlan)
+		document.getElementById('vlanMore').remove();	
 }
 
 // Generate the script based on what you filled or not.
@@ -145,20 +165,40 @@ function generateScript(){
 	output = "";
 
 	// SNMP Configuration
-	// System Name
-	var sysName = document.getElementById("sysName").value;
-	if (sysName.length>1)				
-		output += "configure snmp sysName \""+sysName+"\"\n";					
+	if(document.getElementById('panelSystem').style.display !== "none"){
+		// System Name
+		var sysName = document.getElementById("sysName").value;
+		if (sysName.length>1)				
+			output += "configure snmp sysName \""+sysName+"\"\n";					
 
-	// System Location
-	var sysLocation = document.getElementById("sysLocation").value;
-	if(sysLocation.length>1)				
-		output += "configure snmp sysLocation \""+sysLocation+"\"\n";
+		// System Location
+		var sysLocation = document.getElementById("sysLocation").value;
+		if(sysLocation.length>1)				
+			output += "configure snmp sysLocation \""+sysLocation+"\"\n";
 
-	// System Contact
-	var sysContact = document.getElementById("sysContact").value;
-	if(sysContact.length>1)
-		output += "configure snmp sysContact \""+sysContact+"\"\n";
+		// System Contact
+		var sysContact = document.getElementById("sysContact").value;
+		if(sysContact.length>1)
+			output += "configure snmp sysContact \""+sysContact+"\"\n";
+	}
+
+	// SNMP Configuration
+	if(document.getElementById('panelSNMP').style.display !== "none"){
+		var snmpUser = document.getElementById("snmpUser").value;
+		var snmpAuth = document.getElementById("snmpAuth").value;
+		var snmpDes = document.getElementById("snmpDes").value;
+		var snmpGroup = document.getElementById("snmpGroup").value;
+		
+		if(snmpUser.length>1 && snmpAuth.length>1 && snmpDes.length>1 && snmpGroup.length>1){
+			output += "configure snmpv3 add user "+snmpUser+" authentication md5 "+snmpAuth+" privacy des "+snmpDes+"\n";
+			output += "configure snmpv3 add group "+snmpGroup+" user "+snmpUser+" sec-model usm\n";
+			output += "configure snmpv3 add access "+snmpGroup+" sec-model usm sec-level priv read-view defaultAdminView write-view defaultAdminView notify-view defaultAdminView\n";
+			output += "disable snmp access snmp-v1v2c\n";
+			output += "disable snmpv3 default-user\n";
+			output += "disable snmpv3 default-group\n";
+		}		
+	}
+
 
 	// SNTP Configuration
 	// System SNTP			
@@ -167,8 +207,7 @@ function generateScript(){
 		output += "configure sntp-client primary "+sysSNTP+" vr \"VR-Default\"\n";				
 		output += "enable sntp-client\n";
 		output += "configure timezone name BRT -180 autodst name BRST 60 begins every third sunday october at 0:00 ends every third sunday february at 0:00\n"
-	}
-		
+	}		
 	
 	// Ports Configuration
 	// Custom Port Configuration					
