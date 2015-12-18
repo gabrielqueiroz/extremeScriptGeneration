@@ -1,6 +1,6 @@
 # Gerador de Script Extreme
 
-[Check this in EN-US.](https://github.com/gabrielqueiroz/extremeScriptGeneration/edit/master/README.md) 
+[Check this in EN-US.](https://github.com/gabrielqueiroz/extremeScriptGeneration/blob/master/README.md) 
 
 * **Sobre**
 
