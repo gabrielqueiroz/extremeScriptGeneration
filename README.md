@@ -16,4 +16,4 @@ A simple javascript system that creates scripts for Extreme switches.
 
 * **Live Demo**
 
-[Teste a aplicação online](https://goo.gl/oZTbtg ) 
+[Check the application online](https://goo.gl/oZTbtg ) 
