@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="pt-br">
 <head>
 	<title>TDec Extreme Script</title>
 	<meta charset="utf-8">
@@ -37,10 +37,10 @@
 					<li><a href="#panelPorts" data-toggle="collapse" data-target=".nav-collapse.in">Ports</a></li> 
 					<li><a href="#panelVLAN" data-toggle="collapse" data-target=".nav-collapse.in">VLAN</a></li>
 					<li><a href="#panelAdd" data-toggle="collapse" data-target=".nav-collapse.in">Extras</a></li> 
-					<li><a href="#panelScript" data-toggle="collapse" data-target=".nav-collapse.in">Generate Script</a></li>
-					<li><a href="#panelExport" data-toggle="collapse" data-target=".nav-collapse.in">Export Script</a></li> 
-					<li><a href="./index_pt.html" data-toggle="collapse" data-target=".nav-collapse.in">
-						<img style="max-width:40px;margin-top: -7px;" src="img/br.png"><b>PT-BR</b>
+					<li><a href="#panelScript" data-toggle="collapse" data-target=".nav-collapse.in">Criar Script</a></li>
+					<li><a href="#panelExport" data-toggle="collapse" data-target=".nav-collapse.in">Exportar Script</a></li> 
+					<li><a href="./index.html" data-toggle="collapse" data-target=".nav-collapse.in">
+						<img style="width:40px;margin-top: -7px;" src="img/us.png"><b>EN-US</b>
 						</a>
 					</li>
 				</ul>
@@ -55,7 +55,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">System
 					<div class="btn-group pull-right">
-						<input type="button" value="Configure System" onclick="javascript:toggler('panelSystem');" class="btn btn-default col-md-12">
+						<input type="button" value="Configurar System" onclick="javascript:toggler('panelSystem');" class="btn btn-default col-md-12">
 					</div>
 				</div>
 				<div class="panel-body">
@@ -86,7 +86,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">SNMP
 					<div class="btn-group pull-right">
-						<input type="button" value="Configure SNMP" onclick="javascript:toggler('panelSNMP');" class="btn btn-default col-md-12">
+						<input type="button" value="Configurar SNMP" onclick="javascript:toggler('panelSNMP');" class="btn btn-default col-md-12">
 					</div>
 				</div>
 				<div class="panel-body">		
@@ -119,7 +119,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">NTP
 					<div class="btn-group pull-right">
-						<input type="button" value="Configure NTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
+						<input type="button" value="Configurar NTP" onclick="javascript:toggler('panelSNTP');" class="btn btn-default">
 					</div>
 				</div>					
 				<div class="panel-body">				    	
@@ -167,7 +167,7 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">Extras
 					<div class="btn-group pull-right">
-						<input type="button" value="Configure Extras" onclick="javascript:toggler('panelAdditional');" class="btn btn-default">
+						<input type="button" value="Configurar Adicionais" onclick="javascript:toggler('panelAdditional');" class="btn btn-default">
 					</div>
 				</div>					
 				<div class="panel-body">
@@ -175,18 +175,18 @@
 						<p><input id="confssh2" type="checkbox" value="configure vlan default delete ports all"> Configure ssh2 key</input></p>
 						<p><input id="enablessh2" type="checkbox" value="configure vlan default delete ports all"> Enable ssh2</input></p>
 						<p><input id="disablehttp" type="checkbox" value="configure vlan default delete ports all"> Disable web http</input></p>
-						<p><input id="bannerCheck" type="checkbox" value="configure vlan default delete ports all" onclick="javascript:toggler('panelBanner');"> Configure Banner Before and After</input></p>
+						<p><input id="bannerCheck" type="checkbox" value="configure vlan default delete ports all" onclick="javascript:toggler('panelBanner');"> Adicionar Banner Before e After</input></p>
 						<div id="panelBanner" style="display:none">
 							<div class="form-group" style="margin-top:20px">
 								<label class="control-label col-xs-2 col-md-2">Banner Before:</label>
 								<div class="col-xs-10 col-md-10">
-									<textarea class="form-control" id="bannerBefore" placeholder="Banner Before" rows="5" style="overflow:auto; resize:none" wrap="off">************************************************************&#13;&#10;ACCESS NOT AUTHORIZED&#13;&#10;************************************************************</textarea>
+									<textarea class="form-control" id="bannerBefore" placeholder="Banner Before" rows="5" style="overflow:auto; resize:none" wrap="off">************************************************************&#13;&#10;ACESSO NAO AUTORIZADO&#13;&#10;************************************************************</textarea>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="control-label col-xs-2 col-md-2">Banner After:</label>
 								<div class="col-xs-10 col-md-10">
-									<textarea class="form-control" id="bannerAfter" placeholder="Banner After" rows="5" style="overflow:auto; resize:none" wrap="off">************************************************************&#13;&#10;YOUR ACCESS IS BEING MONITORED&#13;&#10;************************************************************</textarea>
+									<textarea class="form-control" id="bannerAfter" placeholder="Banner After" rows="5" style="overflow:auto; resize:none" wrap="off">************************************************************&#13;&#10;ACESSO MONITORADO&#13;&#10;************************************************************</textarea>
 								</div>
 							</div>
 						</div>
@@ -202,20 +202,20 @@
 
 			<div class="form-group" id="panelScript">        
 		     	<div class="col-sm-12">				     		
-					<input type="button" value="Generate Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block">	
+					<input type="button" value="Criar Script" onclick="javascript:generateScript();" class="btn btn-primary btn-block">	
 				</div>
 			</div>
 
-			<textarea id='output' class="form-control" rows="15" style="width:100% ; overflow:auto; resize:none" placeholder="Your script will be generated here" ></textarea>
+			<textarea id='output' class="form-control" rows="15" style="width:100% ; overflow:auto; resize:none" placeholder="Seu script sera criado aqui" ></textarea>
 			<br>
 
 			<div class="panel panel-default" id="panelExport">
-					<div class="panel-heading">Export Script</div>					
+					<div class="panel-heading">Exportar Script</div>					
 			    <div class="panel-body">
 				    <div class="form-group">
-					    <label class="control-label col-sm-1 col-md-1" for="sysName">Name:</label>
+					    <label class="control-label col-sm-1 col-md-1" for="sysName">Nome:</label>
 					    <div class="col-sm-11 col-md-11">
-					    	<input class="form-control" id="filename" placeholder="File name">
+					    	<input class="form-control" id="filename" placeholder="Nome do arquivo">
 					    </div>
 				    </div>
 

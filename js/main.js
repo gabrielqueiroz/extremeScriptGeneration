@@ -47,7 +47,20 @@ function addPort(portNumber){
 
 		document.getElementById('divPort').appendChild(div);
 		}
-	}			
+	}		
+
+	var portMore = document.createElement('div');
+	if(document.getElementById('portMore') !== null)
+		document.getElementById('portMore').remove();	
+	
+	portMore.innerHTML += '<div class="form-group">\
+								<div class="col-sm-12 col-md-12">\
+									<a href="javascript:remPort();" class="btn btn-danger pull-right">\
+										<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Ports</a>\
+								</div>\
+							</div>';
+	portMore.setAttribute("id", "portMore");
+	document.getElementById('divPort').appendChild(portMore);	
 }
 
 // Function for remove the last VLAN
@@ -58,6 +71,8 @@ function remPort(){
 	while(document.getElementById('switchPort') !== null)
 		document.getElementById('switchPort').remove();		
 
+	document.getElementById('portMore').remove();
+
 	portCount = 0;
 	switchPort = 1;	
 }
@@ -65,16 +80,28 @@ function remPort(){
 // Function for add new VLAN configuration
 function configVLAN(param){			
 	var vlanMore = document.createElement('div');
+	var language = document.getElementsByTagName("html")[0].getAttribute("lang");
 
 	if(document.getElementById('vlanMore') == null){
-		vlanMore.innerHTML += '<p><input id="vlanDefault" type="checkbox" value="" checked> Deletar VLAN Default para todas as portas</input></p>\
+		if(language == "pt-br")
+			vlanMore.innerHTML += '<p><input id="vlanDefault" type="checkbox" value="" checked> Deletar VLAN Default para todas as portas</input></p>\
 			<p><input id="stpd" type="checkbox" value="" checked> Configurar Spanning Tree para as VLANS criadas</input></p>\
 			<div class="form-group">\
-				<label class="control-label col-sm-4 col-md-2" for="sysContact">Gateway:</label>\
+				<label class="control-label col-sm-4 col-md-2" for="gateway">Gateway:</label>\
 				<div class="col-sm-8 col-md-10">\
-					<input class="form-control" id="gateway" placeholder="Default Gateway" value="10.8.16.1">\
+					<input class="form-control" id="gateway" placeholder="Default Gateway">\
+				</div>\
+			</div>';	
+		else
+			vlanMore.innerHTML += '<p><input id="vlanDefault" type="checkbox" value="" checked> Delete VLAN Default for all ports</input></p>\
+			<p><input id="stpd" type="checkbox" value="" checked> Configure Spanning Tree for all created VLANS</input></p>\
+			<div class="form-group">\
+				<label class="control-label col-sm-4 col-md-2" for="gateway">Gateway:</label>\
+				<div class="col-sm-8 col-md-10">\
+					<input class="form-control" id="gateway" placeholder="Default Gateway">\
 				</div>\
 			</div>';
+		
 		vlanMore.setAttribute("id", "vlanMore");
 		document.getElementById('divVLAN').appendChild(vlanMore);
 	}
@@ -83,7 +110,8 @@ function configVLAN(param){
 	div.setAttribute("id", "divVLAN"+vlanCount);	
 
 	if(param == "add")
-	    div.innerHTML += '<div class="form-group">\
+	    div.innerHTML += '<hr>\
+						<div class="form-group">\
 							<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
 							<div class="col-sm-5 col-md-5">\
 								<input class="form-control" id="vlan'+vlanCount+'" placeholder="Create VLAN">\
@@ -123,14 +151,15 @@ function configVLAN(param){
 						</div>\
 						<div class="form-group">\
 							<div class="col-sm-12 col-md-12">\
-								<a href="javascript:remVLAN('+vlanCount+');" class="btn btn-default pull-right">\
+								<a href="javascript:remVLAN('+vlanCount+');" class="btn btn-danger pull-right">\
 									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> VLAN</a>\
 							</div>\
 						</div>';
 
 						
 	else
-		div.innerHTML += '<div class="form-group">\
+		div.innerHTML += '<hr>\
+						<div class="form-group">\
 								<label class="control-label col-sm-1 col-md-1">VLAN:</label>\
 								<div class="col-sm-5 col-md-5">\
 									<input class="form-control" id="delvlan'+vlanCount+'" placeholder="Delete VLAN">\
@@ -139,7 +168,13 @@ function configVLAN(param){
 								<div class="col-sm-5 col-md-5">\
 									<input class="form-control" id="delports'+vlanCount+'" placeholder="Port(s)">\
 								</div>\
-							</div>';
+							</div>\
+						<div class="form-group">\
+							<div class="col-sm-12 col-md-12">\
+								<a href="javascript:remVLAN('+vlanCount+');" class="btn btn-danger pull-right">\
+									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> VLAN</a>\
+							</div>\
+						</div>';
 
 	document.getElementById('divVLAN').appendChild(div);		
 	vlanCount++;
