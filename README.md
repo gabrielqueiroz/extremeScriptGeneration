@@ -1,6 +1,6 @@
 # Extreme Script Generation
 
-[Veja em PT-BR.](https://github.com/gabrielqueiroz/extremeScriptGeneration/edit/master/README_PT.md) 
+[Veja em PT-BR.](https://github.com/gabrielqueiroz/extremeScriptGeneration/blob/master/README_PT.md) 
 
 * **About**
 
